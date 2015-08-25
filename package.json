@@ -1,5 +1,5 @@
 {
-  "name": "token-bucket-rate-limiter",
+  "name": "hyacinth",
   "version": "1.0.0",
   "description": "Rate limiter that uses the Token Bucket algorithm",
   "main": "index.js",
@@ -20,6 +20,7 @@
     "mocha": "^2.2.5"
   },
   "dependencies": {
+    "node-redis-scripty": "0.0.5",
     "redis": "^0.12.1"
   }
 }

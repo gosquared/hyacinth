@@ -51,28 +51,28 @@ describe('TokenBucket', function(){
 			});
 		});
 
-		it('should return a number after 20 async tests', function(){
+		it('should allow 45 hits out of 200 over 2 seconds at a cost of 10', function(){
 			this.timeout(4000);
-			return testRateLimit(rateLimiter, 200, 2000).then(function(data){
-				console.log(data);
-				expect(data).to.be.a('array');
+			return testRateLimit(rateLimiter, 200, 2000, 10).then(function(data){
+				var passed = data.filter(function(item){return item >= 0}).length;
+				expect(passed).to.equal(45);
 			});
 		});
-
 
 	})
 });
 
-function testRateLimit(rateLimiter, hits, time) {
+function testRateLimit(rateLimiter, hits, time, cost) {
 	var promises = [];
 
 	for(var i =0; i < hits; i += 1){
 		promises.push(new Promise(function(resolve, reject) {
 			setTimeout(function(){
-				rateLimiter.rateLimitWithRedis(testKey, 10).then(resolve).catch(reject);
+				rateLimiter.rateLimitWithRedis(testKey, cost).then(resolve).catch(reject);
 			}, (time / hits) * i);
 		}));
 	};
 
 	return Promise.all(promises);
 }
+
