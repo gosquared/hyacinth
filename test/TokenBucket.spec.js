@@ -45,17 +45,17 @@ describe('TokenBucket', function(){
 			});
 		});
 
-		it('should return 250', function(){
+		it('should return the the pool max minus the cost after being reset', function(){
 			return rateLimiter.rateLimitWithRedis(testKey, 10).then(function(data){
-				expect(data).to.equal(250);
+				expect(data).to.equal(240);
 			});
 		});
 
-		it('should allow 45 hits out of 200 over 2 seconds at a cost of 10', function(){
+		it('should allow 44 hits out of 200 over 2 seconds at a cost of 10', function(){
 			this.timeout(4000);
 			return testRateLimit(rateLimiter, 200, 2000, 10).then(function(data){
 				var passed = data.filter(function(item){return item >= 0}).length;
-				expect(passed).to.equal(45);
+				expect(passed).to.equal(44);
 			});
 		});
 
