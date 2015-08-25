@@ -1,0 +1,25 @@
+{
+  "name": "token-bucket-rate-limiter",
+  "version": "1.0.0",
+  "description": "Rate limiter that uses the Token Bucket algorithm",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/TokenBucket.spec.js"
+  },
+  "keywords": [
+    "ratelimit",
+    "rate",
+    "limit",
+    "token",
+    "bucket"
+  ],
+  "author": "Ben white <ben@gosquared.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "mocha": "^2.2.5"
+  },
+  "dependencies": {
+    "redis": "^0.12.1"
+  }
+}
