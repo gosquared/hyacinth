@@ -21,9 +21,9 @@ describe('TokenBucket', function(){
 
 		client.on('ready', function(){
 
-		    rateLimiter = new TokenBucket({
-		    	redis:client,
-		    });
+			rateLimiter = new TokenBucket({
+				redis:client,
+			});
 
 			done();
 		});
@@ -71,8 +71,8 @@ function testRateLimit(rateLimiter, hits, time) {
 			setTimeout(function(){
 				rateLimiter.rateLimitWithRedis(testKey, 10).then(resolve).catch(reject);
 			}, (time / hits) * i);
-		})); 
-	}; 
+		}));
+	};
 
 	return Promise.all(promises);
 }
