@@ -4,6 +4,8 @@
 
 ## Installation
 
+When its on npm...
+
 ```sh
 npm install hyacinth
 ```
@@ -11,18 +13,19 @@ npm install hyacinth
 ## Usage
 
 ```js
-var TokenBucket = require('token-bucket-rate-limiter');
+var TokenBucket = require('hyacinth');
 
 var rateLimiter = new TokenBucket({
 	redis: redisClient,
 	poolMax: 250,
 	fillRate: 240,
-	identifier: 'api-token-bucket-'
 });
 
-rateLimiter.rateLimitWithRedis(testKey, 10).then(function(data){
-	if(!data) return requestDenied();
+rateLimiter.rateLimit(testKey, 10).then(function(tokensRemaining){
+    // Negative number indicates the tokens remaining but limited
+    // as the cost was higher than those remaining
 
+	if(data < 0) return requestDenied();
 	requestApproved();
 });
 ```
