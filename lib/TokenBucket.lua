@@ -8,7 +8,7 @@ end
 
 local owed = (KEYS[2] - t) / KEYS[5]
 local r = redis.call('get', KEYS[1]..'pool')
-redis.call('expire',KEYS[1]..'pool', KEYS[6])
+
 if r == false then
   r = KEYS[4]
 end
