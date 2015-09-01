@@ -38,12 +38,12 @@ describe('TokenBucket', function(){
 				expect(data).to.be.true;
 			});
 		});
-	})
+	});
 
 	describe('rateLimit', function(){
 
 		beforeEach(function(done){
-			client.eval("return redis.call('del', unpack(redis.call('keys', KEYS[1])))", 1, 'API:limits:testing:*', function(err, res){
+			client.eval('return redis.call("del", unpack(redis.call("keys", KEYS[1])))', 1, 'API:limits:testing:*', function(err, res){
 				done();
 			});
 		});
@@ -58,11 +58,9 @@ describe('TokenBucket', function(){
 			});
 		});
 
-
 		//
 		// Numeric tests
 		//
-
 
 		it('should allow 250 hits out of 250 over 2 seconds at a cost of 1', function(){
 			this.timeout(4000);
@@ -70,6 +68,15 @@ describe('TokenBucket', function(){
 			return testRateLimit(250, 240, 250, 2000, 1).then(function(data){
 				var passed = data.filter(function(item){return item >= 0}).length;
 				expect(passed).to.equal(250);
+			});
+		});
+
+    it('should allow 172 hits out of 250 over 2 seconds at a cost of 1.5', function(){
+			this.timeout(4000);
+
+			return testRateLimit(250, 240, 250, 2000, 1.5).then(function(data){
+				var passed = data.filter(function(item){return item >= 0}).length;
+				expect(passed).to.equal(172);
 			});
 		});
 
@@ -91,12 +98,12 @@ describe('TokenBucket', function(){
 			});
 		});
 
-	})
+	});
 
 	describe('rateLimitWithoutLua', function(){
 
 		beforeEach(function(done){
-			client.eval("return redis.call('del', unpack(redis.call('keys', KEYS[1])))", 1, 'API:limits:testing:*', function(err, res){
+			client.eval('return redis.call("del", unpack(redis.call("keys", KEYS[1])))', 1, 'API:limits:testing:*', function(err, res){
 				done();
 			});
 		});
@@ -136,4 +143,3 @@ function testRateLimit(poolMax, fillRate, hits, time, cost, withoutLua) {
 
 	return Promise.all(promises);
 }
-
