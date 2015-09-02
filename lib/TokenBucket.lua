@@ -1,28 +1,47 @@
-local t = redis.call('getset',KEYS[1]..'timestamp', KEYS[2])
-redis.call('expire', KEYS[1]..'timestamp', KEYS[6])
-if t == false then
-  redis.call('set', KEYS[1]..'pool', KEYS[4] - KEYS[3])
-  redis.call('expire',KEYS[1]..'pool', KEYS[6])
-  return tostring(KEYS[4] - KEYS[3])
+local key = KEYS[1]
+local now = KEYS[2]
+local cost = KEYS[3]
+local poolMax = tonumber(KEYS[4])
+local fillRate = KEYS[5]
+local expiry = KEYS[6]
+
+local timestampKey = key..'timestamp'
+local poolKey = key..'pool'
+
+local before = redis.call('get', timestampKey)
+
+if before == false then
+  redis.call('set', timestampKey, now, 'ex', expiry)
+
+  local ret = poolMax - cost
+  redis.call('set', poolKey, ret, 'ex', expiry)
+  return tostring(ret)
 end
 
-local owed = (KEYS[2] - t) / KEYS[5]
-local r = redis.call('get', KEYS[1]..'pool')
+local timediff = now - before
+
+if timediff > 0 then
+  redis.call('set', timestampKey, now, 'ex', expiry)
+else
+  timediff = 0
+end
+
+local owed = timediff / fillRate
+local r = redis.call('get', poolKey)
 
 if r == false then
-  r = KEYS[4]
+  r = poolMax
 end
-if r + owed < tonumber(KEYS[4]) then
-  r = r + owed
-else
-  r = KEYS[4]
-end
+
+r = math.min(r + owed, poolMax)
+
 local limit = 1
-if r - KEYS[3] >= 0 then
-  r = r - KEYS[3]
+if r - cost >= 0 then
+  r = r - cost
 else
   limit = -1
 end
-redis.call('set', KEYS[1]..'pool', r)
-redis.call('expire',KEYS[1]..'pool', KEYS[6])
+
+redis.call('set', poolKey, r, 'ex', expiry)
+
 return tostring(r * limit)
