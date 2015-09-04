@@ -1,6 +1,6 @@
 {
   "name": "hyacinth",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Rate limiter that uses the Token Bucket algorithm",
   "main": "index.js",
   "scripts": {
