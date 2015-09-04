@@ -16,12 +16,10 @@ npm install hyacinth
 var TokenBucket = require('hyacinth');
 
 var rateLimiter = new TokenBucket({
-	redis: redisClient,
-	poolMax: 250,
-	fillRate: 240,
+	redis: redisClient
 });
 
-rateLimiter.rateLimit(testKey, 10).then(function(tokensRemaining){
+rateLimiter.rateLimit(testKey, 10, 250, 240).then(function(tokensRemaining){
     // Negative number indicates the tokens remaining but limited
     // as the cost was higher than those remaining
 

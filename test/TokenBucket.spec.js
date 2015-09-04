@@ -9,6 +9,7 @@ var timers = 0;
 var count = 0;
 var client;
 
+
 describe('TokenBucket', function(){
 
 	before(function(done){
@@ -19,20 +20,15 @@ describe('TokenBucket', function(){
 		});
 
 		client.on('ready', function(){
+      rateLimiter = new TokenBucket({redis:client});
 			done();
 		});
 	});
 
 	describe('rateLimitReset', function(){
-		it('should return the max pool size when resetting', function(){
+		it('should return true when resetting', function(){
 
 			var testKey = 'API:limits:testing:0:';
-
-			rateLimiter = new TokenBucket({
-				redis:client,
-				poolMax: 250,
-				fillRate: 40
-			});
 
 			return rateLimiter.clearRateLimitWithKey(testKey).then(function(data){
 				expect(data).to.be.true;
@@ -51,9 +47,8 @@ describe('TokenBucket', function(){
 		it('should return the the pool max minus the cost after being reset', function(){
 
 			var testKey = 'API:limits:testing:1:';
-			rateLimiter = new TokenBucket({redis:client});
 
-			return rateLimiter.rateLimit(testKey, 10).then(function(data){
+			return rateLimiter.rateLimit(testKey, 10, 250, 240).then(function(data){
 				expect(data).to.equal(240);
 			});
 		});
@@ -66,7 +61,7 @@ describe('TokenBucket', function(){
 			this.timeout(4000);
 
 			return testRateLimit(250, 240, 250, 2000, 1).then(function(data){
-				var passed = data.filter(function(item){return item >= 0}).length;
+				var passed = data.filter(function(item){return item >= 0;}).length;
 				expect(passed).to.equal(250);
 			});
 		});
@@ -75,7 +70,7 @@ describe('TokenBucket', function(){
 			this.timeout(4000);
 
 			return testRateLimit(250, 240, 250, 2000, 1.5).then(function(data){
-				var passed = data.filter(function(item){return item >= 0}).length;
+				var passed = data.filter(function(item){return item >= 0;}).length;
 				expect(passed).to.equal(172);
 			});
 		});
@@ -84,7 +79,7 @@ describe('TokenBucket', function(){
 			this.timeout(4000);
 
 			return testRateLimit(250, 240, 500, 2000, 1).then(function(data){
-				var passed = data.filter(function(item){return item >= 0}).length;
+				var passed = data.filter(function(item){return item >= 0;}).length;
 				expect(passed).to.equal(258);
 			});
 		});
@@ -93,50 +88,26 @@ describe('TokenBucket', function(){
 			this.timeout(4000);
 
 			return testRateLimit(250, 240, 500, 1000, 1).then(function(data){
-				var passed = data.filter(function(item){return item >= 0}).length;
+				var passed = data.filter(function(item){return item >= 0;}).length;
 				expect(passed).to.equal(254);
 			});
 		});
 
 	});
-
-	describe('rateLimitWithoutLua', function(){
-
-		beforeEach(function(done){
-			client.eval('return redis.call("del", unpack(redis.call("keys", KEYS[1])))', 1, 'API:limits:testing:*', function(err, res){
-				done();
-			});
-		});
-
-		it('should allow 25 hits out of 500 over 2 seconds at a cost of 10', function(){
-			this.timeout(4000);
-
-			return testRateLimit(250, 240, 500, 2000, 10, true).then(function(data){
-				var passed = data.filter(function(item){return item >= 0}).length;
-				expect(passed).to.be.within(24,26);
-			});
-		});
-	});
 });
 
-function testRateLimit(poolMax, fillRate, hits, time, cost, withoutLua) {
+function testRateLimit(poolMax, fillRate, hits, time, cost) {
 
 	//Expected pass amount is poolMax + time(ms) / fillRate / cost
 
 	var promises = [];
 
 	var key = 'API:limits:testing:';
-	rateLimiter = new TokenBucket({
-		redis:client,
-		poolMax: poolMax,
-		fillRate: fillRate
-	});
 
-	for(var i =0; i < hits; i += 1){
+	for (var i =0; i < hits; i += 1){
 		promises.push(new Promise(function(resolve, reject) {
 			setTimeout(function(){
-				if(withoutLua) 	rateLimiter.rateLimitWithoutLua(key, cost).then(resolve).catch(reject);
-				else			 			rateLimiter.rateLimit(key, cost).then(resolve).catch(reject);
+				rateLimiter.rateLimit(key, cost, poolMax, fillRate).then(resolve).catch(reject);
 			}, (time / hits) * i);
 		}));
 	};
