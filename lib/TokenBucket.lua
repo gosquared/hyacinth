@@ -1,9 +1,9 @@
 local key = KEYS[1]
-local now = KEYS[2]
-local cost = KEYS[3]
-local poolMax = tonumber(KEYS[4])
-local fillRate = KEYS[5]
-local expiry = KEYS[6]
+local now = ARGV[1]
+local cost = ARGV[2]
+local poolMax = tonumber(ARGV[3])
+local fillRate = ARGV[4]
+local expiry = ARGV[5]
 
 local timestampKey = key..'timestamp'
 local poolKey = key..'pool'
