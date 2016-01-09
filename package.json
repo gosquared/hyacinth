@@ -1,10 +1,24 @@
 {
   "name": "hyacinth",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "Rate limiter that uses the Token Bucket algorithm",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gosquared/hyacinth.git"
+  },
+  "keywords": [
+    "rate",
+    "limiting",
+    "limit",
+    "throttle",
+    "token",
+    "bucket"
+  ],
+  "bugs": { "url": "http://github.com/gosquared/hyacinth/issues" },
   "scripts": {
-    "test": "mocha test/TokenBucket.spec.js"
+    "test": "mocha test/TokenBucket.spec.js",
+    "test:watch": "mocha -w test/TokenBucket.spec.js"
   },
   "keywords": [
     "ratelimit",
@@ -14,8 +28,9 @@
     "bucket"
   ],
   "author": "Ben white <ben@gosquared.com>",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
+    "async": "^1.5.2",
     "chai": "^3.2.0",
     "mocha": "^2.2.5"
   },
