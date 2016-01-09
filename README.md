@@ -43,7 +43,7 @@ rateLimiter.rateLimit(resourceKey, 10, 250, 240, function(err, tokensRemaining){
 
 var Hyacinth = require('hyacinth');
 var Redis = require('redis');
-var tokenBucket new Hyacinth({
+var tokenBucket = new Hyacinth({
   redis: Redis.createClient()
 });
 
@@ -51,7 +51,7 @@ module.exports = function rateLimits(req, res, next) {
   var key = 'API:limits:' + req.userID;   // Create a key that is associated with the API user
   var cost = 10;                          // This could be set dependent on the endpoint route
   var poolMax = 250;                      // The number of tokens for the user
-  var fillInterval = 100;                 // How often a token is added to the bucket
+  var fillInterval = 100;                 // How often a token is added to the bucket (milliseconds)
 
   // This config will allow an average 10 requests per second
   // and bursts of 25 requests with a full token bucket
@@ -68,7 +68,7 @@ module.exports = function rateLimits(req, res, next) {
 
     if (tokensRemaining < 0) {
       // A negative response indicates that they should be rate limited
-      console.log(req.userID ' has been rate limited.');
+      console.log(req.userID + ' has been rate limited.');
 
       res.status(429).send({
         message: 'Your request has been rate limited'
@@ -79,6 +79,7 @@ module.exports = function rateLimits(req, res, next) {
 
     next();
   });
+};
 
 
 ```
