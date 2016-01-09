@@ -48,7 +48,6 @@ describe('TokenBucket', function() {
       var testKey = 'API:limits:testing:1:';
 
       rateLimiter.rateLimit(testKey, 10, 250, 240, function(err, data) {
-        console.log(data);
         expect(data).to.equal(240);
         done();
       });
