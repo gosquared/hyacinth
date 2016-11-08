@@ -11,16 +11,42 @@ var client;
 
 describe('TokenBucket', function() {
 
-  before(function(done) {
+  beforeEach(function(done) {
     client = Redis.createClient(6379, 'localhost');
     client.on('error', function(err) {
       console.error('Error on redis connection', err);
     });
 
     client.on('ready', function() {
-      rateLimiter = new TokenBucket({ redis: client });
+      rateLimiter = new TokenBucket({ client: client });
       done();
     });
+  });
+
+  it('should allow passing a redis client', function(done) {
+    var c = Redis.createClient(6380, '1.2.3.4');
+    var rl = new TokenBucket({ client: c });
+
+    c.on('error', function() {
+
+    });
+
+    expect(rl.redis.options.port).to.equal(6380);
+    expect(rl.redis.options.host).to.equal('1.2.3.4');
+    done();
+  });
+
+  it('should allow passing a config', function(done) {
+    var rl = new TokenBucket({ port: 6381, host: '2.3.4.5' });
+
+    rl.redis.on('error', function() {
+
+    });
+
+    expect(rl.redis.options.port).to.equal(6381);
+    expect(rl.redis.options.host).to.equal('2.3.4.5');
+
+    done();
   });
 
   describe('rateLimitReset', function() {
@@ -61,7 +87,7 @@ describe('TokenBucket', function() {
       this.timeout(4000);
 
       testRateLimit(250, 240, 250, 2000, 1, function(err, data) {
-        var passed = data.filter(function(item) {return item >= 0;}).length;
+        var passed = data.filter(function(item) { return item >= 0; }).length;
         expect(passed).to.equal(250);
         done();
       });
@@ -71,7 +97,7 @@ describe('TokenBucket', function() {
       this.timeout(4000);
 
       testRateLimit(250, 240, 250, 2000, 1.5, function(err, data) {
-        var passed = data.filter(function(item) {return item >= 0;}).length;
+        var passed = data.filter(function(item) { return item >= 0; }).length;
         expect(passed).to.equal(172);
         done();
       });
@@ -81,7 +107,7 @@ describe('TokenBucket', function() {
       this.timeout(4000);
 
       testRateLimit(250, 240, 500, 2000, 1, function(err, data) {
-        var passed = data.filter(function(item) {return item >= 0;}).length;
+        var passed = data.filter(function(item) { return item >= 0; }).length;
         expect(passed).to.equal(258);
         done();
       });
@@ -91,7 +117,7 @@ describe('TokenBucket', function() {
       this.timeout(4000);
 
       testRateLimit(250, 240, 500, 1000, 1, function(err, data) {
-        var passed = data.filter(function(item) {return item >= 0;}).length;
+        var passed = data.filter(function(item) { return item >= 0; }).length;
         expect(passed).to.equal(254);
         done();
       });

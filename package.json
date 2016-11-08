@@ -8,34 +8,28 @@
     "url": "git://github.com/gosquared/hyacinth.git"
   },
   "keywords": [
-    "rate",
-    "limiting",
-    "limit",
-    "throttle",
-    "token",
-    "bucket"
-  ],
-  "bugs": { "url": "http://github.com/gosquared/hyacinth/issues" },
-  "scripts": {
-    "test": "mocha test/TokenBucket.spec.js",
-    "test:watch": "mocha -w test/TokenBucket.spec.js"
-  },
-  "keywords": [
     "ratelimit",
     "rate",
     "limit",
     "token",
     "bucket"
   ],
+  "bugs": {
+    "url": "http://github.com/gosquared/hyacinth/issues"
+  },
+  "scripts": {
+    "test": "mocha test/TokenBucket.spec.js",
+    "test:watch": "mocha -w test/TokenBucket.spec.js"
+  },
   "author": "Ben white <ben@gosquared.com>",
   "license": "MIT",
   "devDependencies": {
-    "async": "^1.5.2",
-    "chai": "^3.2.0",
-    "mocha": "^2.2.5"
+    "async": "^2.1.2",
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2"
   },
   "dependencies": {
     "node-redis-scripty": "0.0.5",
-    "redis": "^0.12.1"
+    "redis": "^2.6.3"
   }
 }
