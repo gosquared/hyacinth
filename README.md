@@ -10,9 +10,6 @@ Hyacinth uses Redis as it's shared store and Lua scripting to ensure atomicity b
 
 
 ## Installation
-
-When its on npm...
-
 ```sh
 npm install hyacinth --save
 ```
@@ -31,7 +28,11 @@ rateLimiter.rateLimit(resourceKey, 10, 250, 240, function(err, tokensRemaining){
     // Negative number indicates the tokens remaining but limited
     // as the cost was higher than those remaining
 
-	if(data < 0) return requestDenied();
+	if(data < 0) {
+    requestDenied();
+    return;
+  }
+  
 	requestApproved();
 });
 ```
@@ -44,7 +45,7 @@ rateLimiter.rateLimit(resourceKey, 10, 250, 240, function(err, tokensRemaining){
 var Hyacinth = require('hyacinth');
 var Redis = require('redis');
 var tokenBucket = new Hyacinth({
-  redis: Redis.createClient()
+  client: Redis.createClient()
 });
 
 module.exports = function rateLimits(req, res, next) {
