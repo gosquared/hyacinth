@@ -70,6 +70,15 @@ describe('TokenBucket', function() {
       });
     });
 
+    it('should not allow empty args', function(done) {
+      var testKey = 'API:limits:testing:1:';
+
+      rateLimiter.rateLimit(testKey, 0, 250, 240, function(err, data) {
+        expect(err.message).to.equal('Missing arguments');
+        done();
+      });
+    });
+
     it('should return the the pool max minus the cost after being reset', function(done) {
       var testKey = 'API:limits:testing:1:';
 
