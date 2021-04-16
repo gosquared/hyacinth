@@ -22,13 +22,27 @@
     "test:watch": "mocha -w test/TokenBucket.spec.js"
   },
   "author": "Ben white <ben@gosquared.com>",
+  "contributors": [
+    {
+      "name": "Geoff Wagstaff",
+      "email": "geoff@gosquared.com",
+      "url": "https://github.com/TheDeveloper"
+    }
+  ],
   "license": "MIT",
   "devDependencies": {
     "async": "^2.1.2",
-    "chai": "^3.5.0",
-    "mocha": "^3.1.2"
+    "chai": "^4.3.4",
+    "eslint": "^7.24.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "ioredis": "^4.26.0",
+    "mocha": "^8.3.2"
   },
   "dependencies": {
+    "node-redis-script": "^2.0.1",
     "node-redis-scripty": "0.0.5",
     "redis": "^2.6.3"
   }

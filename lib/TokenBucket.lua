@@ -13,9 +13,14 @@ local before = redis.call('get', timestampKey)
 if before == false then
   redis.call('set', timestampKey, now, 'ex', expiry)
 
-  local ret = poolMax - cost
-  redis.call('set', poolKey, ret, 'ex', expiry)
-  return tostring(ret)
+  local remaining = poolMax - cost
+
+  if remaining < 0 then
+    return tostring(-1)
+  end
+
+  redis.call('set', poolKey, remaining, 'ex', expiry)
+  return tostring(remaining)
 end
 
 local timediff = now - before
@@ -26,22 +31,19 @@ else
   timediff = 0
 end
 
-local owed = timediff / fillRate
-local r = redis.call('get', poolKey)
+local earned = timediff / fillRate
+local balance = redis.call('get', poolKey)
 
-if r == false then
-  r = poolMax
+if balance == false then
+  balance = poolMax
+end
+balance = math.min(balance + earned, poolMax)
+
+local remaining = balance - cost
+if remaining < 0 then
+  return tostring(-1)
 end
 
-r = math.min(r + owed, poolMax)
+redis.call('set', poolKey, remaining, 'ex', expiry)
 
-local limit = 1
-if r - cost >= 0 then
-  r = r - cost
-else
-  limit = -1
-end
-
-redis.call('set', poolKey, r, 'ex', expiry)
-
-return tostring(r * limit)
+return tostring(remaining)
