@@ -1,17 +1,18 @@
 import IORedis, { Redis } from 'ioredis'
 
-import { createScript } from 'node-redis-script'
+import { createScript, RunScript } from 'node-redis-script'
 import fs from 'fs'
 import path from 'path'
 
 const fp = path.resolve(path.join('./deduct.lua'))
-const src = fs.readFileSync(fp)
+const src = fs.readFileSync(fp, { encoding: 'utf-8' })
 
 export default class TokenBucket {
   ioredis: IORedis.Redis
   name: string
   max: number
   fill: number
+  bucket?: RunScript
 
   constructor (
     ioredis: IORedis.Redis,
@@ -25,7 +26,13 @@ export default class TokenBucket {
     this.fill = fill
   }
 
-  async balance () {
+  async balance (): Promise<string | null> {
     return this.ioredis.get(`${this.name}.pool`)
+  }
+
+  async rateLimit (cost: number) {
+    if (!this.bucket) {
+      this.bucket = createScript({ ioredis: this.ioredis }, src)
+    }
   }
 }
