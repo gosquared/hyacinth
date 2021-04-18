@@ -1,20 +1,18 @@
-import IORedis from "ioredis"
+import IORedis from 'ioredis'
 
-const Redis = require('ioredis')
-const { createScript } = require('node-redis-script')
-const fs = require('fs')
-const path = require('path')
+import { createScript } from 'node-redis-script'
+import fs from 'fs'
+import path from 'path'
 
-exports.deduct = (
+const fp = path.resolve(path.join('./deduct.lua'))
+const src = fs.readFileSync(fp)
+
+export async function deductTokens (
   ioredis: IORedis.Redis,
   name: string,
-  cost: number,
+  num: number,
   max: number,
   fill: number
-) => {
-
-}
-
-exports.limit = () => {
+) {
 
 }
