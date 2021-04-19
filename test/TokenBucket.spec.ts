@@ -1,17 +1,20 @@
-const chai = require('chai')
-const async = require('async')
+import chai from 'chai'
+import async from 'async'
+
+import Redis from 'ioredis'
+import TokenBucket from '../src/bucket'
 const { expect } = chai
 
-const Redis = require('ioredis')
-const TokenBucket = require('../lib/TokenBucket')
-
 let rateLimiter
-let client
+let ioredis
 
 describe('TokenBucket', function () {
   beforeEach(function () {
-    client = new Redis()
-    rateLimiter = new TokenBucket({ client: client })
+    ioredis = new Redis()
+    const name = 'tb:test'
+    const max = 10
+    const fill = 1
+    rateLimiter = new TokenBucket(ioredis, name, max, fill)
     // client.on('error', function (err) {
     //   console.error('Error on redis connection', err)
     // })
@@ -33,7 +36,7 @@ describe('TokenBucket', function () {
 
   describe('rateLimit', function () {
     beforeEach(done => {
-      client.eval('return redis.call("del", unpack(redis.call("keys", KEYS[1])))', 1, 'API:limits:testing:*').catch(() => done()).then(() => done())
+      return client.eval('return redis.call("del", unpack(redis.call("keys", KEYS[1])))', 1, 'API:limits:testing:*')
     })
 
     it('should return the the pool max minus the cost after being reset', async () => {
